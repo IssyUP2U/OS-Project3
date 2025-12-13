@@ -1,13 +1,11 @@
 //ims190003
 #include "index.h"
-#include "btree.c"
-#include "index.h"
+int btree_search(const char *filename, uint64_t key);
+int btree_insert(const char *filename, uint64_t key, uint64_t value);
+int btree_print(const char *filename);
+int btree_extract(const char *filename, const char *outname);
+int btree_load_csv(const char *filename, const char *csvfile);
 
-int btree_insert(const char *, uint64_t, uint64_t);
-int btree_search(const char *, uint64_t);
-int btree_print(const char *);
-int btree_extract(const char *, const char *);
-int btree_load_csv(const char *, const char *);
 
 //create command function
 static int cmd_create(const char *filename)
