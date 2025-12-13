@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define BLOCK_SIZE 512
 #define BTREE_DEGREE 10 //minimal degree 10
@@ -36,11 +37,13 @@ typedef struct { //Node block
     char unused[BLOCK_SIZE - (8 + 8 + 8 + MAX_KEYS*8 + MAX_KEYS*8 + MAX_CHILDREN*8)];
 }btree_node_t;
 
+/*
 int btree_insert(const char *filename, uint64_t key, uint64_t value);
 int btree_search(const char *filename, uint64_t key);
 int btree_load_csv(const char *filename, const char *csvfile);
 int btree_print(const char *filename);
 int btree_extract(const char *filename, const char *outfile);
+*/
 
 //--------------------------------split other functions @_@
 

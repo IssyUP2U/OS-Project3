@@ -28,7 +28,7 @@ static int search_node(FILE *fp, uint64_t blockID,
     btree_node_t node;
     read_node(fp, blockID, &node);
 
-    int i = 0;
+    uint64_t i = 0;
     while (i < node.keyCount && key > node.keys[i])
         i++;
 
@@ -188,10 +188,7 @@ int btree_insert(const char *filename, uint64_t key, uint64_t value)
     return 0;
 }
 
-/* ------------------------------------------------------------
-   TRAVERSAL (print/extract)
------------------------------------------------------------- */
-
+//traversalllll
 static void traverse(FILE *fp, uint64_t blockID,
                      void (*visit)(uint64_t, uint64_t, void *),
                      void *ctx)
@@ -202,23 +199,20 @@ static void traverse(FILE *fp, uint64_t blockID,
     btree_node_t node;
     read_node(fp, blockID, &node);
 
-    for (int i = 0; i < node.keyCount; i++) {
+    for (uint64_t i = 0; i < node.keyCount; i++) {
         traverse(fp, node.children[i], visit, ctx);
         visit(node.keys[i], node.values[i], ctx);
     }
     traverse(fp, node.children[node.keyCount], visit, ctx);
 }
 
-/* ------------------------------------------------------------
-   PRINT
------------------------------------------------------------- */
-
+//print key-value pairs
 static void print_pair(uint64_t k, uint64_t v, void *ctx)
 {
     (void)ctx;
     printf("%lu %lu\n", k, v);
 }
-
+//btree print
 int btree_print(const char *filename)
 {
     FILE *fp = fopen(filename, "rb");
@@ -232,10 +226,7 @@ int btree_print(const char *filename)
     return 0;
 }
 
-/* ------------------------------------------------------------
-   EXTRACT
------------------------------------------------------------- */
-
+//extract
 static void extract_pair(uint64_t k, uint64_t v, void *ctx)
 {
     FILE *out = ctx;
@@ -260,10 +251,7 @@ int btree_extract(const char *filename, const char *outname)
     return 0;
 }
 
-/* ------------------------------------------------------------
-   LOAD (CSV)
------------------------------------------------------------- */
-
+//load csv
 int btree_load_csv(const char *filename, const char *csvfile)
 {
     FILE *csv = fopen(csvfile, "r");

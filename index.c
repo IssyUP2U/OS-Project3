@@ -45,8 +45,8 @@ int read_header(FILE *fp, index_header_t *hdr)
     if (fread(hdr, BLOCK_SIZE, 1, fp) != 1)
         return -1;
 
-    hdr->root_id    = from_big(hdr->root_id);
-    hdr->next_block = from_big(hdr->next_block);
+    hdr->rootID    = from_big(hdr->rootID);
+    hdr->nextBlock = from_big(hdr->nextBlock);
 
     return 0;
 }
@@ -55,8 +55,8 @@ int write_header(FILE *fp, index_header_t *hdr)
 {
     index_header_t temp = *hdr;
 
-    temp.root_id    = to_big(temp.root_id);
-    temp.next_block = to_big(temp.next_block);
+    temp.rootID    = to_big(temp.rootID);
+    temp.nextBlock = to_big(temp.nextBlock);
 
     if (fseek(fp, 0, SEEK_SET) != 0)
         return -1;
@@ -69,19 +69,22 @@ int write_header(FILE *fp, index_header_t *hdr)
 }
 
 //node read/write
-void read_node(FILE *fp, uint64_t block_id, btree_node_t *node)
+void read_node(FILE *fp, uint64_t blockID, btree_node_t *node)
 {
-    uint64_t offset = block_id * BLOCK_SIZE;
+    uint64_t offset = blockID * BLOCK_SIZE;
     fseek(fp, offset, SEEK_SET);
 
     uint8_t buffer[BLOCK_SIZE];
-    fread(buffer, BLOCK_SIZE, 1, fp);
+    if (fread(buffer, BLOCK_SIZE, 1, fp) != 1) {
+        perror("fread");
+        exit(1);
+    }
 
     uint64_t *p = (uint64_t *)buffer;
 
-    node->block_id = from_big(p[0]);
-    node->parent   = from_big(p[1]);
-    node->num_keys = from_big(p[2]);
+    node->blockID = from_big(p[0]);
+    node->parentNode   = from_big(p[1]);
+    node->keyCount = from_big(p[2]);
 
     for (int i = 0; i < MAX_KEYS; i++)
         node->keys[i] = from_big(p[3 + i]);
@@ -101,9 +104,9 @@ void write_node(FILE *fp, btree_node_t *node)
 
     uint64_t *p = (uint64_t *)buffer;
 
-    p[0] = to_big(node->block_id);
-    p[1] = to_big(node->parent);
-    p[2] = to_big(node->num_keys);
+    p[0] = to_big(node->blockID);
+    p[1] = to_big(node->parentNode);
+    p[2] = to_big(node->keyCount);
 
     for (int i = 0; i < MAX_KEYS; i++)
         p[3 + i] = to_big(node->keys[i]);
@@ -115,7 +118,7 @@ void write_node(FILE *fp, btree_node_t *node)
         p[3 + 2 * MAX_KEYS + i] =
             to_big(node->children[i]);
 
-    uint64_t offset = node->block_id * BLOCK_SIZE;
+    uint64_t offset = node->blockID * BLOCK_SIZE;
     fseek(fp, offset, SEEK_SET);
     fwrite(buffer, BLOCK_SIZE, 1, fp);
     fflush(fp);
